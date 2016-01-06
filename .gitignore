@@ -1,8 +1,6 @@
 
 *.class
 
-*.jar
-
 *.iml
 
 out/artifacts/vaadinSample_war_exploded/index.jsp
@@ -10,6 +8,10 @@ out/artifacts/vaadinSample_war_exploded/index.jsp
 out/artifacts/vaadinSample_war_exploded/WEB-INF/images/image.png
 
 out/artifacts/vaadinSample_war_exploded/WEB-INF/web.xml
+
+out/*
+
+.idea/*
 
 .idea/.name
 
