@@ -1,12 +1,13 @@
 package com;
 
-import com.google.gwt.user.client.ui.CheckBox;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.data.Property;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.*;
 
 import javax.servlet.annotation.WebServlet;
+import java.util.Date;
 
 /**
  * Created by zhouchunjie on 16/1/5.
@@ -370,7 +371,7 @@ public class MyVaadinApplication extends UI {
         table.setImmediate(true);*/
 
         //Table 内的组件
-        //Create a table and add a style to allow setting the row height in theme.
+        /*//Create a table and add a style to allow setting the row height in theme.
         Table table = new Table();
         table.addStyleName("component-inside");
 
@@ -380,10 +381,75 @@ public class MyVaadinApplication extends UI {
         table.addContainerProperty("Details", Button.class, null);
 
         //Add a few items in the table
-        for (int i=0;i<100;i++){
+        for (int i = 0; i < 100; i++) {
             //Create the fields for the current table row
-//            Label sumField = new Label(String.format("Sum is <b>$%"))
+            Label sumField = new Label(String.format("Sum is <b>$%04.2f</b><br/><i>(VAT incl.)</i>", new Object[]{
+                    new Double(Math.random() * 1000)
+            }), ContentMode.HTML);
+
+            CheckBox transferredField = new CheckBox("is transferred");
+
+            //Multiline text field. This required modifying the height of the table row.
+            TextField commentsField = new TextField();
+            commentsField.setHeight("10px");//无 setRows方法
+
+            //The Table item identifier for the row
+            Integer itemId = new Integer(i);
+
+            //Create a button and handle its click. A Button does not know
+            //the item it is contained in, so wo have to store the item ID as user-defined data.
+            Button detailsField = new Button("show details");
+            detailsField.setData(itemId);
+            detailsField.addClickListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent clickEvent) {
+                    //Get the item identifier from the user-defined data.
+                    Integer iid = (Integer) clickEvent.getButton().getData();
+                    Notification.show("Link " + iid.intValue() + " clicked");
+                }
+            });
+
+            detailsField.addStyleName("link");
+
+            //Create the table row
+            table.addItem(new Object[]{sumField, transferredField, commentsField, detailsField}, itemId);
         }
+
+        //Show just three rows because they are so high
+        table.setPageLength(3);
+
+        layout.addComponent(table);*/
+
+        //在Table内编辑数据值
+        layout.addComponent(new Label("Table内编辑数据值"));
+        //Create a table . It is by default not editable
+        Table table = new Table();
+        table.addContainerProperty("Data", Date.class, null);
+        table.addContainerProperty("Work", Boolean.class, null);
+        table.addContainerProperty("Comments", String.class, null);
+
+        //Add a few items in the table
+        for (int i = 0; i < 100; i++) {
+            java.util.Calendar calendar = new java.util.GregorianCalendar(2008, 0, 1);
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1);
+
+            //Create the table  row
+            table.addItem(new Object[]{calendar.getTime(), new Boolean(false), ""}, new Integer(i));
+        }
+        table.setPageLength(8);
+        layout.addComponent(table);
+
+        CheckBox switchEditable = new CheckBox("Editable");
+        switchEditable.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+                table.setEditable(((Boolean) valueChangeEvent.getProperty().getValue()).booleanValue());
+            }
+        });
+
+        switchEditable.setImmediate(true);
+        layout.addComponent(switchEditable);
+        
 
     }
 }
