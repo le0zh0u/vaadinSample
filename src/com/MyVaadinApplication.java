@@ -1,13 +1,17 @@
 package com;
 
+import com.dto.Person;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.data.Property;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.validator.BeanValidator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.*;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 import javax.servlet.annotation.WebServlet;
-import java.util.Date;
 
 /**
  * Created by zhouchunjie on 16/1/5.
@@ -421,7 +425,7 @@ public class MyVaadinApplication extends UI {
         layout.addComponent(table);*/
 
         //在Table内编辑数据值
-        layout.addComponent(new Label("Table内编辑数据值"));
+       /* layout.addComponent(new Label("Table内编辑数据值"));
         //Create a table . It is by default not editable
         Table table = new Table();
         table.addContainerProperty("Data", Date.class, null);
@@ -448,8 +452,81 @@ public class MyVaadinApplication extends UI {
         });
 
         switchEditable.setImmediate(true);
-        layout.addComponent(switchEditable);
-        
+        layout.addComponent(switchEditable);*/
 
+        //Simple Data Binding
+        // Have an item
+        /*PropertysetItem item = new PropertysetItem();
+        item.addItemProperty("name", new ObjectProperty<String>("Zaphod"));
+        item.addItemProperty("age", new ObjectProperty<Integer>(42));
+
+        //Design a form for editing the data
+        //Have some layout and create the fields
+        FormLayout formLayout = new FormLayout();
+
+//        TextField nameField = new TextField("Name");
+//        formLayout.addComponent(nameField);
+//
+//        TextField ageField = new TextField("Age");
+//        formLayout.addComponent(ageField);
+//
+//        FieldGroup binder = new FieldGroup(item);
+//        binder.bind(nameField, "name");
+//        binder.bind(ageField, "age");
+
+        FieldGroup binder = new FieldGroup(item);
+        formLayout.addComponent(binder.buildAndBind("Name","name"));
+        formLayout.addComponent(binder.buildAndBind("Age","age"));
+
+        setContent(formLayout);*/
+
+        // Custom Form Bind
+        /*// Have an item
+        PropertysetItem item = new PropertysetItem();
+        item.addItemProperty("name", new ObjectProperty<String>("Zaphod"));
+        item.addItemProperty("age", new ObjectProperty<Integer>(42));
+
+        //Define a form as a class that extends some layout
+        class MyForm extends FormLayout {
+            //Member that will bind to the "name" property
+//            @PropertyId("name")
+            TextField name = new TextField("Name");
+
+            //Member that will bind to the "age" property
+            @PropertyId("age")
+            TextField ageField = new TextField("Age");
+
+            public MyForm() {
+                //Customize the layout a bit
+                setSpacing(true);
+
+                //Add the fields
+                addComponent(name);
+                addComponent(ageField);
+            }
+        }
+
+        MyForm form = new MyForm();
+        // Now create a binder that can also creates the fields using the default field factory
+        FieldGroup binder = new FieldGroup(item);
+        binder.bindMemberFields(form);
+
+        setContent(form);*/
+
+        //Bean Validation
+
+        Person bean = new Person("Mung bean", 100);
+        BeanItem<Person> item = new BeanItem<Person>(bean);
+
+        BeanFieldGroup<Person> binder = new BeanFieldGroup<>(Person.class);
+        binder.setItemDataSource(bean);
+        layout.addComponent(binder.buildAndBind("Name","name"));
+        layout.addComponent(binder.buildAndBind("Age","age"));
+
+        //Add the bean validator
+        firstName.addValidator(new BeanValidator(Person.class, "name"));
+
+        firstName.setImmediate(true);
+        layout.addComponent(firstName);
     }
 }
